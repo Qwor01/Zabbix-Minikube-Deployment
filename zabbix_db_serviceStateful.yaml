@@ -1,0 +1,57 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zabbix-postgres
+  labels:
+    app: zabbix-postgres
+spec:
+  ports:
+    - port: 5432
+      name: postgres
+  clusterIP: None
+  selector:
+    app: zabbix-postgres
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: zabbix-postgres
+  labels:
+    app: zabbix-postgres
+spec:
+  serviceName: "zabbix-postgres"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zabbix-postgres
+  template:
+    metadata:
+      labels:
+        app: zabbix-postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:13
+        env:
+          - name: POSTGRES_DB
+            value: "zabbix"
+          - name: POSTGRES_USER
+            value: "zabbix"
+          - name: POSTGRES_PASSWORD
+            value: "zabbix_password"
+        ports:
+          - containerPort: 5432
+            name: postgres
+        volumeMounts:
+          - name: postgres-persistent-storage
+            mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+  - metadata:
+      name: postgres-persistent-storage
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Gi
+
