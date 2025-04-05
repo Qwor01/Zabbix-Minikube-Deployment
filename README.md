@@ -11,11 +11,7 @@
 minikube start
 
 # Apply the YAML files
-kubectl apply -f zabbix_db_serviceStateful.yaml
-kubectl apply -f zabbix_front_deployment.yaml
-kubectl apply -f zabbix_front_service.yaml
-kubectl apply -f zabbix_server_deployment.yaml
-kubectl apply -f zabbix_server_service.yaml
+kubectl apply -f .
 
 # Get the Front-End url to log into zabbix
 minikube service --all
